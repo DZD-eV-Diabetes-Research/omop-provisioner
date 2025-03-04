@@ -1,0 +1,37 @@
+networks:
+  defaultnet:
+
+
+services:
+  omoprovision:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    environment:
+      LOG_LEVEL: DEBUG
+      POSTGRESQL_HOST: postgresql
+      POSTGRESQL_USER: omop
+      POSTGRESQL_DATABASE: omop
+      POSTGRESQL_PASSWORD: omop
+      POSTGRESQL_PORT: 5432
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - defaultnet
+
+  postgresql:
+    image: postgres:16
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=omop
+      - POSTGRES_DB=omop
+      - POSTGRES_USER=omop
+      - POSTGRES_INITDB_ARGS=--lc-collate C.UTF-8 --lc-ctype C --encoding UTF8
+    healthcheck:
+      test: "pg_isready -h localhost -p 5432 -q -U omop"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - defaultnet
