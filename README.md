@@ -12,6 +12,8 @@ OMOP Provisioner is based on https://github.com/DZD-eV-Diabetes-Research/dzd-omo
 
 This projects aims to be used as a Docker container image
 
+The image is hosten on https://hub.docker.com at [dzdde/omop-provisioner](https://hub.docker.com/r/dzdde/omop-provisioner)
+
 Lets have an example how to integrate it in an `docker-compose.yaml` file
 
 ```yaml
