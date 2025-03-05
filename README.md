@@ -61,6 +61,10 @@ With the command `docker compose up` we will spin up a postgres database, deploy
 
 Our imaginary software `my-other-omop-service` will start after all this is done and will have a ready to go OMOP schema available.
 
+## configuration
+
+For all configuration options have a look at the [`omop_provisioner/config.py`](omop_provisioner/config.py) file.
+
 # Development
 
 ## Setup
