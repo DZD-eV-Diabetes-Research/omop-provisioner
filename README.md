@@ -68,7 +68,8 @@ requierments:
 - [PDM](https://pdm-project.org/latest/)
 - [Docker](https://www.docker.com/) with docker compose
 
-Install all python dependencies
+Install all python dependencies:
+
 `pdm install`
 
 > [!NOTE]  
