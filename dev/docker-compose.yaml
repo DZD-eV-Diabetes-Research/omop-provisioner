@@ -3,7 +3,7 @@ networks:
 
 
 services:
-  omoprovision:
+  omop-provision:
     build:
       context: ../
       dockerfile: Dockerfile
