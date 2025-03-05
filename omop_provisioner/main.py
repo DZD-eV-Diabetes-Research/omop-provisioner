@@ -21,6 +21,7 @@ from omop_provisioner.omop_provisioner_state import (
     get_state,
     update_state,
 )
+from omop_provisioner.athena_vocab_file_handler import AthenaVocabFileHandler
 
 log = get_logger()
 config = Config()
@@ -33,12 +34,16 @@ elif config.OMOP_VERSION == "5.3":
 
 engine = create_engine(url=config.get_sql_url())
 omop_provisioner_state: OmopProvisionerState = get_state(engine)
+log.debug(
+    ("omop_provisioner_state", type(omop_provisioner_state), omop_provisioner_state)
+)
+
 if not omop_provisioner_state.schema_version_deployed or config.FORCE_SCHEMA_DEPLOYMENT:
     log.info(f"Deploy OMPO Schema to database '{config.get_sql_url(no_password=True)}'")
     # Create the OMOP Schema on our database
     omop.Base.metadata.create_all(engine)
     omop_provisioner_state.schema_version_deployed = config.OMOP_VERSION
-    update_state(engine, omop_provisioner_state)
+    omop_provisioner_state = update_state(engine, omop_provisioner_state)
 
 if config.TRUNCATE_TABLES_ON_START:
     log.info("Truncate all OMOP tables because TRUNCATE_TABLES_ON_START=True")
@@ -46,14 +51,20 @@ if config.TRUNCATE_TABLES_ON_START:
 
 if config.LOAD_VOCABULARY:
     if not omop_provisioner_state.vocabulary_loaded:
-        v = VocabulariesLoader(
-            config.VOCABULARY_DIR,
-            database_engine=engine,
-            omop_module=omop,
-            truncate_vocabulary_tables_before_insert=True,
-        )
+        vocab_file_handler = AthenaVocabFileHandler(config.VOCABULARY_SOURCE)
+        vocab_file_path = vocab_file_handler.get_vocab_csvs_path()
+        log.debug(f"vocab_file_path: {vocab_file_path}")
+        if vocab_file_path:
+            v = VocabulariesLoader(
+                vocab_file_path,
+                database_engine=engine,
+                omop_module=omop,
+                truncate_vocabulary_tables_before_insert=True,
+            )
+            log.info("Load Athena Vocabulary. This can take some time...")
+            v.load_all()
         omop_provisioner_state.vocabulary_loaded = True
-        update_state(engine, omop_provisioner_state)
+        omop_provisioner_state = update_state(engine, omop_provisioner_state)
 
 
 if config.LOG_LEVEL == "DEBUG":

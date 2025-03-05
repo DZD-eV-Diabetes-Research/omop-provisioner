@@ -3,7 +3,7 @@ name = "omop-provisioner"
 version = "0.1.0"
 description = "Helper container to provision the OMOP CDM schema to a postgres database. It can also load vocabulary!"
 authors = [{ name = "Tim Bleimehl", email = "tim.bleimehl@dzd-ev.de" }]
-dependencies = ["dzdomop>=0.4.0", "pydantic-settings>=2.8.1"]
+dependencies = ["dzdomop>=0.4.0", "pydantic-settings>=2.8.1", "requests>=2.32.3"]
 requires-python = "==3.11.*"
 readme = "README.md"
 license = { text = "MIT" }
