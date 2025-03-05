@@ -9,19 +9,21 @@ from omopmodel import OMOP_5_4_declarative
 config = Config()
 
 
-def get_engine() -> Engine:
+def get_engine(url: str, schema_name: str = None) -> Engine:
     engine = create_engine(
-        url=config.get_sql_url(),
+        url=url,
     )
 
     # Set the search_path after connection is established
-    def set_search_path(dbapi_connection: Connection, connection_record):
-        # Use the cursor to execute SQL to set search_path
-        cursor = dbapi_connection.cursor()
-        cursor.execute(f"SET search_path TO {config.POSTGRESQL_SCHEMA}")
-        cursor.close()
+    if schema_name:
 
-    event.listen(engine, "connect", set_search_path)
+        def set_search_path(dbapi_connection: Connection, connection_record):
+            # Use the cursor to execute SQL to set search_path
+            cursor = dbapi_connection.cursor()
+            cursor.execute(f"SET search_path TO {config.POSTGRESQL_SCHEMA}")
+            cursor.close()
+
+        event.listen(engine, "connect", set_search_path)
     return engine
 
 

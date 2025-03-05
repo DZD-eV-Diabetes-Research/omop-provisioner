@@ -47,7 +47,9 @@ log.debug(
 )
 
 if not omop_provisioner_state.schema_version_deployed or config.FORCE_SCHEMA_DEPLOYMENT:
-    log.info(f"Deploy OMPO Schema to database '{config.get_sql_url(no_password=True)}'")
+    log.info(
+        f"Deploy OMPO Schema to database '{config.get_sql_url(hide_password=True)}'"
+    )
     # Create the OMOP Schema on our database
     omop.Base.metadata.create_all(engine)
     omop_provisioner_state.schema_version_deployed = config.OMOP_VERSION
@@ -80,4 +82,7 @@ if config.LOG_LEVEL == "DEBUG":
     inspector = inspect(engine)
     log.debug("Following tables exists in database:")
     log.debug(inspector.get_table_names())
+
+if config.OHDSI_WEBAPI_REGISTER_DATASOURCE:
+    config.get_webapi_sql_url()
 log.info("OMOP Provisioner done running successful. Will exit with 0...")
