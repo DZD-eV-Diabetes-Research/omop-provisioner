@@ -14,7 +14,11 @@ if __name__ == "__main__":
     sys.path.insert(0, os.path.normpath(MODULE_PARENT_DIR))
 
 from omop_provisioner.config import Config
-from omop_provisioner.utils import truncate_db
+from omop_provisioner.db import (
+    truncate_db,
+    set_table_schema_search_path,
+    create_schema_if_not_exists,
+)
 from omop_provisioner.log import get_logger
 from omop_provisioner.omop_provisioner_state import (
     OmopProvisionerState,
@@ -22,6 +26,7 @@ from omop_provisioner.omop_provisioner_state import (
     update_state,
 )
 from omop_provisioner.athena_vocab_file_handler import AthenaVocabFileHandler
+from omop_provisioner.db import get_engine
 
 log = get_logger()
 config = Config()
@@ -31,8 +36,11 @@ if config.OMOP_VERSION == "5.4":
 elif config.OMOP_VERSION == "5.3":
     log.info("Import OMOP schema 5.4")
     from omopmodel import OMOP_5_3_declarative as omop
+engine = get_engine()
 
-engine = create_engine(url=config.get_sql_url())
+# omop.Base.metadata.schema = config.POSTGRESQL_SCHEMA
+create_schema_if_not_exists(engine, config.POSTGRESQL_SCHEMA)
+set_table_schema_search_path(omop, config.POSTGRESQL_SCHEMA)
 omop_provisioner_state: OmopProvisionerState = get_state(engine)
 log.debug(
     ("omop_provisioner_state", type(omop_provisioner_state), omop_provisioner_state)
