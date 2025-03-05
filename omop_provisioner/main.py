@@ -84,5 +84,6 @@ if config.LOG_LEVEL == "DEBUG":
     log.debug(inspector.get_table_names())
 
 if config.OHDSI_WEBAPI_REGISTER_DATASOURCE:
+    # you are here
     config.get_webapi_sql_url()
 log.info("OMOP Provisioner done running successful. Will exit with 0...")
