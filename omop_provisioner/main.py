@@ -63,10 +63,13 @@ if config.LOAD_VOCABULARY:
             )
             log.info("Load Athena Vocabulary. This can take some time...")
             v.load_all()
+            log.info("... done loading Athena Vocabulary.")
         omop_provisioner_state.vocabulary_loaded = True
         omop_provisioner_state = update_state(engine, omop_provisioner_state)
 
 
 if config.LOG_LEVEL == "DEBUG":
     inspector = inspect(engine)
+    log.debug("Following tables exists in database:")
     log.debug(inspector.get_table_names())
+log.info("OMOP Provisioner done running successful. Will exit with 0...")
