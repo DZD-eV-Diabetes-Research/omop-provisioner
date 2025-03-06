@@ -77,21 +77,3 @@ class Config(BaseSettings):
         default=None,
         description="Schema within the OHDSI WebAPI PostgreSQL database to use.",
     )
-
-    def get_webapi_sql_url(
-        self, hide_password: bool = False, scheme: str = "postgresql+pg8000://"
-    ) -> str:
-        """Generates the SQLAlchemy-compatible PostgreSQL connection URL."""
-        password = (
-            "****"
-            if hide_password
-            else self.OHDSI_WEBAPI_POSTGRESQL_PASSWORD or self.POSTGRESQL_PASSWORD
-        )
-        return f"{scheme}{self.OHDSI_WEBAPI_POSTGRESQL_HOST or self.POSTGRESQL_USER}:{password}@{self.OHDSI_WEBAPI_POSTGRESQL_HOST or self.POSTGRESQL_HOST}:{self.OHDSI_WEBAPI_POSTGRESQL_PORT or self.POSTGRESQL_HOST}/{self.OHDSI_WEBAPI_POSTGRESQL_DATABASE or self.POSTGRESQL_DATABASE}"
-
-    def get_sql_url(
-        self, hide_password: bool = False, scheme: str = "postgresql+pg8000://"
-    ) -> str:
-        """Generates the SQLAlchemy-compatible PostgreSQL connection URL."""
-        password = "****" if hide_password else self.POSTGRESQL_PASSWORD
-        return f"{scheme}{self.POSTGRESQL_USER}:{password}@{self.POSTGRESQL_HOST}:{self.POSTGRESQL_HOST}/{self.POSTGRESQL_DATABASE}"

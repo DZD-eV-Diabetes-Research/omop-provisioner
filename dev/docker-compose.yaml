@@ -1,6 +1,3 @@
-networks:
-  defaultnet:
-
 
 services:
   omop-provision:
@@ -14,14 +11,13 @@ services:
       POSTGRESQL_DATABASE: omop
       POSTGRESQL_PASSWORD: omop
       POSTGRESQL_PORT: 5432
-      POSTGRESQL_SCHEMA: alt
       VOCABULARY_SOURCE: ${VOCAB_ZIP_URL}
       LOAD_VOCABULARY: ${LOAD_VOCABULARY}
+      OHDSI_WEBAPI_REGISTER_DATASOURCE: true
+      OHDSI_WEBAPI_POSTGRESQL_SCHEMA: ohdsi
     depends_on:
       postgresql:
         condition: service_healthy
-    networks:
-      - defaultnet
 
   postgresql:
     image: postgres:16
@@ -38,5 +34,43 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - defaultnet
+    volumes:
+      - ./data/postgres/cdm:/var/lib/postgresql/data
+  webapi:
+    image: ohdsi/webapi
+    ports:
+      - 8080:8080
+    #expose:
+    #  - 8080
+    volumes:
+      - ./WebAPIConfig:/var/lib/ohdsi/webapi/WebAPIConfig
+    environment:
+      - JAVA_OPTS=-Xmx4g -Dsecurity.cors.enabled=false -Dsecurity.origin=*
+      - CLASSPATH=":/var/lib/ohdsi/webapi/drivers/*"
+      - WEBAPI_URL=http://localhost:8080
+      # Specify Spring settings. Any Spring setting that is set in `pom.xml` or your own
+      # settings.xml can be replaced with a variable in this list. Replace the periods (.) 
+      # in the variable name with underscores (_)
+      - env=webapi-postgresql
+      - DATASOURCE_DRIVERCLASSNAME=org.postgresql.Driver
+      - DATASOURCE_URL=jdbc:postgresql://postgresql:5432/omop
+      - DATASOURCE_OHDSI_SCHEMA=ohdsi
+      - DATASOURCE_USERNAME=omop
+      - DATASOURCE_PASSWORD=omop
+      - spring_jpa_properties_hibernate_default__schema=ohdsi
+      - spring_jpa_properties_hibernate_dialect=org.hibernate.dialect.PostgreSQLDialect
+      - spring_batch_repository_tableprefix=ohdsi.BATCH_
+      - flyway_datasource_driverClassName=org.postgresql.Driver
+      - flyway_datasource_url=jdbc:postgresql://postgresql:5432/omop
+      - flyway_schemas=ohdsi
+      - flyway_placeholders_ohdsiSchema=ohdsi
+      - flyway_datasource_username=omop
+      - flyway_datasource_password=omop
+      - flyway_locations=classpath:db/migration/postgresql
+
+      - SECURITY_ORIGIN="*"
+      - SECURITY_CORS_ENABLED=false
+      - SECURITY_SSL_ENABLED=false
+    depends_on:
+      omop-provision:
+        condition: service_completed_successfully

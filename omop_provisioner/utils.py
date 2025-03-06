@@ -16,3 +16,7 @@ def import_module_by_path_name(import_: str, from_: str = None):
         return getattr(module, import_)
     else:
         return importlib.import_module(import_)
+
+
+def string_to_slug(s: str) -> str:
+    return re.sub(r"[^a-zA-Z0-9]+", "-", s).strip("-").lower()
