@@ -4,7 +4,7 @@ A helper container to prepare a [Postgres](https://www.postgresql.org/) database
 
 # About
 
-This scope of this project is to help creating local instances of the OMOP CDM with vocabulary running on a Postgres database.
+The scope of this project is to help creating disposable/local/tinkering instances of the OMOP CDM with vocabulary running on a Postgres database and registering this database as a source for a [OHDSI/WebAPI](https://github.com/OHDSI/WebAPI) instance.
 
 OMOP Provisioner is based on https://github.com/DZD-eV-Diabetes-Research/dzd-omop-cdm-python-models and build for https://github.com/DZD-eV-Diabetes-Research/atlas-testing-docker
 
@@ -12,7 +12,7 @@ OMOP Provisioner is based on https://github.com/DZD-eV-Diabetes-Research/dzd-omo
 
 This projects aims to be used as a Docker container image
 
-The image is hosten on https://hub.docker.com at [dzdde/omop-provisioner](https://hub.docker.com/r/dzdde/omop-provisioner)
+The image is hosted on https://hub.docker.com at [dzdde/omop-provisioner](https://hub.docker.com/r/dzdde/omop-provisioner)
 
 Lets have an example how to integrate it in an `docker-compose.yaml` file
 
