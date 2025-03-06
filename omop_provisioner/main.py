@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 from pathlib import Path
 import os
 import sys
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine, inspect, schema
 from omopmodel import VocabulariesLoader
 
 if __name__ == "__main__":
@@ -85,5 +85,19 @@ if config.LOG_LEVEL == "DEBUG":
 
 if config.OHDSI_WEBAPI_REGISTER_DATASOURCE:
     # you are here
-    config.get_webapi_sql_url()
+    atlas_schema_name = (
+        config.OHDSI_WEBAPI_POSTGRESQL_SCHEMA or config.POSTGRESQL_SCHEMA
+    )
+    atlas_db_url = config.get_webapi_sql_url()
+    atlas_db_engine = get_engine(
+        atlas_db_url, config.OHDSI_WEBAPI_POSTGRESQL_SCHEMA or config.POSTGRESQL_SCHEMA
+    )
+    con = atlas_db_engine.connect()
+    trans = con.begin()
+    if  atlas_db_engine.dialect.has_schema(con, atlas_schema_name):
+        con.execute())
+    trans.commit()
+    con.close()
+
+
 log.info("OMOP Provisioner done running successful. Will exit with 0...")
