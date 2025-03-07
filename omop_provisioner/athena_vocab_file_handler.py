@@ -13,6 +13,7 @@ log = get_logger()
 
 class AthenaVocabFileHandler:
     def __init__(self, source: str):
+        log.debug(f"AthenaVocabFileHandler source={source}")
         self.result_path = None
         self.temp_dir_download = None
         self.temp_dir_unzip = None
@@ -27,9 +28,15 @@ class AthenaVocabFileHandler:
             log.info(f"Download Athena Vocab zip from {source}")
             zip_file = self._download_zip(self.temp_dir_download)
         elif source_type == "file":
+            log.info(f"Try to extract Athena Vocabulary from zip file {source}")
             zip_file = source
         elif source_type == "dir":
+            log.info(f"Assuming Athena vocabulary in directory {source}")
             self.result_path = source
+        elif source_type is None:
+            raise ValueError(
+                f"'{source}' is not valid source for athena vocabulary. Its not an url, zip file or an existing directory. Maybe you need to mount the path into docker?"
+            )
         if zip_file is not None:
             self.temp_dir_unzip = tempfile.mkdtemp()
             log.info(f"Unzip Athena Vocab zip from {zip_file}")
@@ -68,7 +75,9 @@ class AthenaVocabFileHandler:
 
         # Expand user home (~) and environment variables
         expanded_path = os.path.expanduser(os.path.expandvars(path))
-
+        log.debug(f"expanded_path {expanded_path}")
+        log.debug(f"os.path.isfile(expanded_path):{os.path.isfile(expanded_path)}")
+        log.debug(f"os.path.isdir(expanded_path):{os.path.isdir(expanded_path)}")
         # Check if the path is a local file
         if os.path.isfile(expanded_path):
             return "file"

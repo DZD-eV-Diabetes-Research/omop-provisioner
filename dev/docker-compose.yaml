@@ -11,7 +11,7 @@ services:
       POSTGRESQL_DATABASE: omop
       POSTGRESQL_PASSWORD: omop
       POSTGRESQL_PORT: 5432
-      VOCABULARY_SOURCE: ${VOCAB_ZIP_URL}
+      VOCABULARY_SOURCE: ${VOCABULARY_SOURCE}
       LOAD_VOCABULARY: ${LOAD_VOCABULARY}
       OHDSI_WEBAPI_REGISTER_DATASOURCE: true
       OHDSI_WEBAPI_POSTGRESQL_SCHEMA: ohdsi
@@ -34,8 +34,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    volumes:
-      - ./data/postgres/cdm:/var/lib/postgresql/data
+    #volumes:
+    #  - ./data/postgres/cdm:/var/lib/postgresql/data
   webapi:
     image: ohdsi/webapi
     ports:
