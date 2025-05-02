@@ -39,7 +39,7 @@ class AtlasDataSourceInjector:
         return text(
             f"""
         INSERT INTO {self.atlas_db_schema_name}.source (source_id, source_name, source_key, source_connection, source_dialect, username, password) 
-        SELECT nextval('{self.atlas_db_schema_name}.source_sequence'), '{config.OHDSI_WEBAPI_DATASOURCE_NAME}', '{self._gen_source_identifier()}', ' {get_omop_sql_url(scheme='jdbc:postgresql://',auth_style='parameter')}', 'postgresql','{config.OHDSI_WEBAPI_POSTGRESQL_USER}','{config.OHDSI_WEBAPI_POSTGRESQL_PASSWORD}';
+        SELECT nextval('{self.atlas_db_schema_name}.source_sequence'), '{config.OHDSI_WEBAPI_DATASOURCE_NAME}', '{self._gen_source_identifier()}', ' {get_omop_sql_url(scheme='jdbc:postgresql://',auth_style=None)}', 'postgresql','{config.POSTGRESQL_USER}','{config.POSTGRESQL_PASSWORD}';
 
         INSERT INTO {self.atlas_db_schema_name}.source_daimon (source_daimon_id, source_id, daimon_type, table_qualifier, priority) 
         SELECT nextval('{self.atlas_db_schema_name}.source_daimon_sequence'), source_id, 0, 'cdm', 0
