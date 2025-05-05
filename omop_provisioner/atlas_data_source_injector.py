@@ -58,5 +58,10 @@ class AtlasDataSourceInjector:
         FROM {self.atlas_db_schema_name}.source
         WHERE source_key = '{self._gen_source_identifier()}'
         ;
+        INSERT INTO {self.atlas_db_schema_name}.source_daimon (source_daimon_id, source_id, daimon_type, table_qualifier, priority) 
+        SELECT nextval('{self.atlas_db_schema_name}.source_daimon_sequence'), source_id, 5, 'temp', 0
+        FROM {self.atlas_db_schema_name}.source
+        WHERE source_key = '{self._gen_source_identifier()}'
+        ;
         """
         )
